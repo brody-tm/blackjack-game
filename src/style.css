@@ -1,16 +1,18 @@
+/* General Styles */
 * {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.25rem;
     color: white;
     background-color: rgb(119, 15, 15);
 }
 
+/* Button Styles */
 button {
-    border: .1rem solid white;
-    border-radius: .3rem;
-    padding: .2rem;
+    border: 0.1rem solid white;
+    border-radius: 0.3rem;
+    padding: 0.2rem;
     background-color: white;
     color: rgb(119, 15, 15);
 }
@@ -21,6 +23,7 @@ button:hover {
     color: white;
 }
 
+/* Game Container */
 #game {
     height: 100vh;
     display: flex;
@@ -29,29 +32,27 @@ button:hover {
     justify-content: space-evenly;
 }
 
-#player {
+/* Player and Opponent Containers */
+#player, #opponent {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#opponent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
+/* Hand Label */
 .hand_label {
-    margin-bottom: .1rem;
+    margin-bottom: 0.1rem;
 }
 
+/* Footer */
 #footer {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* Card Image */
 .card_img {
     width: 8rem;
-    margin: .1rem;
+    margin: 0.1rem;
 }
