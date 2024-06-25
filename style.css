@@ -2,6 +2,23 @@
     margin: 0px;
     padding: 0px;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.25rem;
+    color: white;
+    background-color: rgb(119, 15, 15);
+}
+
+button {
+    border: .1rem solid white;
+    border-radius: .3rem;
+    padding: .2rem;
+    background-color: white;
+    color: rgb(119, 15, 15);
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: rgb(119, 15, 15);
+    color: white;
 }
 
 #game {
@@ -18,8 +35,14 @@
     align-items: center;
 }
 
-#player_text {
-    margin-bottom: .3rem;
+#opponent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hand_label {
+    margin-bottom: .1rem;
 }
 
 #footer {
@@ -29,5 +52,6 @@
 }
 
 .card_img {
-    width: 50px;
+    width: 8rem;
+    margin: .1rem;
 }

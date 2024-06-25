@@ -8,22 +8,20 @@
 </head>
 <body>
     <div id="game">
-        <!-- <div id="opponent">
-            Opponent:
-            <span id="opponent_hand">
-                _____
-            </span>
-        </div> -->
+        <div id="opponent">
+            <div class="hand_label">
+                Opponent:
+            </div>
+            <div id="opponent_hand"></div>
+        </div>
 
         <div id="player">
-            <div id="player_text">
+            <div class="hand_label">
                 Player:
             </div>
     
             <div id="player_hand"></div>
-    
-            <div id="player_value"></div>
-    
+        
             <div id="player_buttons">
                 <button id="player_hit">Hit</button>
     
@@ -31,14 +29,10 @@
             </div>
         </div>
     
-        <div id="footer">
-            <div id="result">
-                Result: <span id="result_display">_____</span>
-            </div>
-        
-            <div>
-                <button id="start_button">Start</button>
-            </div>
+        <span id="result_display"></span>
+    
+        <div>
+            <button id="start_button">New hand</button>
         </div>
     </div>
     <script src="app.js"></script>

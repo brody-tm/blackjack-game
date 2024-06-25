@@ -1,9 +1,14 @@
 const deck_id = "6xbg34byt17f";
 
 const playerHandDisplay = document.getElementById("player_hand");
-const playerValueDisplay = document.getElementById("player_value");
 const playerHitDisplay = document.getElementById("player_hit");
 const playerStayDisplay = document.getElementById("player_stay");
+let playerStay = 0;
+let playerBust = 0;
+
+const opponentHandDisplay = document.getElementById("opponent_hand");
+let opponentStay = 0;
+let opponentBust = 0;
 
 const resultDisplay = document.getElementById("result_display");
 const startButtonDisplay = document.getElementById("start_button");
@@ -89,10 +94,11 @@ function getHandValue(hand) {
 }
 
 // Display cards in the UI
-function displayCards(cards, container) {
-    cards.forEach(card => {
+function displayCards(images, container) {
+    container.innerHTML = ""; // Clear any existing cards
+    images.forEach(image => {
         const cardImg = document.createElement("img");
-        cardImg.src = card.image;
+        cardImg.src = image;
         cardImg.classList.add("card_img");
         container.appendChild(cardImg);
     });
@@ -101,49 +107,129 @@ function displayCards(cards, container) {
 // Initialize the game
 async function setupGame() {
     const playerHand = await dealHand("player");
+    const opponentHand = await dealHand("opponent");
 
     playerHandCodes = playerHand.map(card => card.code);
     playerHandImages = playerHand.map(card => card.image);
     playerHandValue = getHandValue(playerHand);
 
-    displayCards(playerHand, playerHandDisplay);
-    playerValueDisplay.innerText = playerHandValue;
+    opponentHandCodes = opponentHand.map(card => card.code);
+    opponentHandImages = opponentHand.map(card => card.image);
+    opponentHandOriginalImages = [...opponentHandImages]; // Store the original images
+    opponentHandImages[0] = 'https://deckofcardsapi.com/static/img/back.png'; // Change the first image
+
+    opponentHandValue = getHandValue(opponentHand);
+
+    console.log(opponentHandImages);
+
+    displayCards(playerHandImages, playerHandDisplay); // Use playerHandImages
+    displayCards(opponentHandImages, opponentHandDisplay); // Use opponentHandImages
 
     console.log("Player: " + playerHandCodes + " Value: " + playerHandValue);
 }
+
+
+function determineWinner() {
+    // Reveal the dealer's first card
+    opponentHandImages[0] = opponentHandOriginalImages[0];
+    displayCards(opponentHandImages, opponentHandDisplay);
+
+    if (playerBust) {
+        console.log("The dealer wins! Score: " + playerHandValue + "-" + opponentHandValue);
+        resultDisplay.innerText = "The dealer wins! Score: " + playerHandValue + "-" + opponentHandValue;
+        if (opponentBust) {
+            resultDisplay.innerText = "It's a draw! Score: " + playerHandValue + "-" + opponentHandValue;
+        }
+    } else if (opponentBust) {
+        console.log("Player wins! Score: " + playerHandValue + "-" + opponentHandValue);
+        resultDisplay.innerText = "Player wins! Score: " + playerHandValue + "-" + opponentHandValue;
+    } else if (playerHandValue == opponentHandValue) {
+        console.log("It's a draw! Score: " + playerHandValue + "-" + opponentHandValue);
+        resultDisplay.innerText = "It's a draw! Score: " + playerHandValue + "-" + opponentHandValue;
+    } else if (playerHandValue > opponentHandValue) {
+        console.log("Player wins! Score: " + playerHandValue + "-" + opponentHandValue);
+        resultDisplay.innerText = "Player wins! Score: " + playerHandValue + "-" + opponentHandValue;
+    } else if (playerHandValue < opponentHandValue) {
+        console.log("The dealer wins! Score: " + playerHandValue + "-" + opponentHandValue);
+        resultDisplay.innerText = "The dealer wins! Score: " + playerHandValue + "-" + opponentHandValue;
+    }
+    return;
+}
+
 
 // Main game logic
 async function main() {
     await shuffleCards();
     await setupGame();
 
+    // Listen for hit
     playerHitDisplay.addEventListener("click", async () => {
-        const hitHand = await hit("player");
-        playerHandCodes.push(hitHand.map(card => card.code));
-        playerHandImages.push(hitHand.map(card => card.image));
-        playerHandValue += getHandValue(hitHand);
-
-        displayCards(hitHand, playerHandDisplay);
-        playerValueDisplay.innerText = playerHandValue;
-
-        console.log("Hit! Player: " + playerHandCodes + " Value: " + playerHandValue);
-
-        if (playerHandValue > 21) {
-            resultDisplay.innerText = "Bust!";
-            console.log("Bust!");
+        if (playerHandValue >= 21) {
+            return;
+        }
+    
+        const playerHitHand = await hit("player");
+        if (playerHitHand.length > 0) {
+            playerHandCodes.push(playerHitHand[0].code);
+            playerHandImages.push(playerHitHand[0].image);
+            playerHandValue += getHandValue(playerHitHand);
+    
+            displayCards(playerHandImages, playerHandDisplay);
+    
+            console.log("Hit! Player: " + playerHandCodes + " Value: " + playerHandValue);
+    
+            if (playerHandValue > 21) {
+                console.log("Bust!");
+                playerBust = 1;
+            }
+        }
+    
+        if (opponentHandValue < 15) {
+            const opponentHitHand = await hit("opponent");
+            if (opponentHitHand.length > 0) {
+                opponentHandCodes.push(opponentHitHand[0].code);
+                opponentHandImages.push(opponentHitHand[0].image);
+                opponentHandValue += getHandValue(opponentHitHand);
+    
+                displayCards(opponentHandImages, opponentHandDisplay);
+    
+                if (opponentHandValue > 21) {
+                    console.log("Bust!");
+                    opponentBust = 1;
+                }
+            }
+        } else {
+            opponentStay = 1;
         }
     });
 
-    playerStayDisplay.addEventListener("click", () => {
-        console.log("You stay");
-        if (playerHandValue === 21) {
-            if (playerHandCodes.length === 2) {
-                resultDisplay.innerText = "Blackjack! You win.";
-                console.log("Blackjack! You win.");
-            } else {
-                resultDisplay.innerText = "21! You win.";
-                console.log("21! You win.");
+    playerStayDisplay.addEventListener("click", async () => {
+        playerStay = 1;
+
+        // Check if opponent should hit or stay
+        while (true) {
+            if (opponentHandValue < 15) {
+                const opponentHitHand = await hit("opponent");
+                opponentHandCodes.push(opponentHitHand.map(card => card.code));
+                opponentHandImages.push(opponentHitHand.map(card => card.image));
+                opponentHandValue += getHandValue(opponentHitHand);
+        
+                displayCards(opponentHitHand, opponentHandDisplay);
+    
+                if (opponentHandValue > 21) {
+                    // resultDisplay.innerText = "Bust!";
+                    console.log("Bust!");
+                    opponentBust = 1;
+                }
             }
+            else {
+                opponentStay = 1;
+                break;
+            }
+        }
+
+        if (opponentStay) {
+            determineWinner();
         }
     });
 }
