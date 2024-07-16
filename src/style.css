@@ -26,6 +26,9 @@ button:hover {
 /* Game Container */
 #game {
     height: 100vh;
+}
+
+#game {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -39,9 +42,24 @@ button:hover {
     align-items: center;
 }
 
+/* Player Hand and Opponent Hand Containers */
+#player_hand, #opponent_hand {
+    height: 12rem;
+}
+
+#player_buttons {
+    margin-top: 0.8rem;
+}
+
 /* Hand Label */
 .hand_label {
     margin-bottom: 0.1rem;
+}
+
+#result_display {
+    display: flex;
+    align-items: center;
+    height: 2rem;
 }
 
 /* Footer */
@@ -53,6 +71,6 @@ button:hover {
 
 /* Card Image */
 .card_img {
-    width: 8rem;
+    height: inherit;
     margin: 0.1rem;
 }
